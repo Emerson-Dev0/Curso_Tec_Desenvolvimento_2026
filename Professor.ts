@@ -1,4 +1,4 @@
-  import { Aluno } from "./Aluno";
+  
     
   export class Professor{
  
@@ -14,10 +14,7 @@
     falar(){
         console.log("Olá mundo!\n");
     }
-    atribuir(aluno : Aluno){
-        console.log("a nota do Aluno", this.nome);
-        console.log("é: ",  this.nota);
-    }
+
 
   
 
