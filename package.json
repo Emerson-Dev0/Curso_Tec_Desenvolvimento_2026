@@ -1,0 +1,25 @@
+{
+  "name": "curso_tec_desenvolvimento_2026",
+  "version": "1.0.0",
+  "description": "Diretório criado para armazenar o conteúdo ensinado no crurso.",
+  "main": "index.js",
+  
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Emerson-Dev0/Curso_Tec_Desenvolvimento_2026.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Emerson-Dev0/Curso_Tec_Desenvolvimento_2026/issues"
+  },
+  "homepage": "https://github.com/Emerson-Dev0/Curso_Tec_Desenvolvimento_2026#readme",
+  "devDependencies": {
+    "@types/prompt-sync": "^4.2.3"
+  }
+}
