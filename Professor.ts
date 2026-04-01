@@ -11,8 +11,13 @@
     
        }
 
-    falar(){
-        console.log("Olá mundo!\n");
+    falanm(){
+        console.log("Meu nome é: ", this.nome_prof);
+    }
+
+    
+    falaridd(){
+        console.log("Meu nome é: ", this.nome_prof);
     }
 
 

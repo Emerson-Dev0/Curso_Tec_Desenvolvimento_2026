@@ -14,3 +14,10 @@ const p2 = new Aluno(17, "Emerson", 10.0);
 p2.flridade();
 p2.flrnome();
 p2.flrnt();
+
+import { Professor } from "./Professor.ts";
+
+const p3 = new Professor ("Alexandre", 24);
+
+p3.falanm();
+p3.falaridd();
