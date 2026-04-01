@@ -16,7 +16,7 @@
     }
     atribuir(aluno : Aluno){
         console.log("a nota do Aluno", this.nome);
-        console.log("é: ", this.nota);
+        console.log("é: ",  this.nota);
     }
 
   
