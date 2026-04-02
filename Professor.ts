@@ -17,7 +17,7 @@
 
     
     falaridd(){
-        console.log("Meu nome é: ", this.nome_prof);
+        console.log("Minha idade é: ", this.idade);
     }
 
 

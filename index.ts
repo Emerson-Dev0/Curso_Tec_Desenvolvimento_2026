@@ -11,6 +11,7 @@ import { Aluno } from "./Aluno.ts";
 
 const p2 = new Aluno(17, "Emerson", 10.0);
 
+p2.alterar_nota(10);
 p2.flridade();
 p2.flrnome();
 p2.flrnt();
