@@ -1,13 +1,13 @@
-export class contador {
+export class Contador {
     static total: number = 0;
-    public nome: string;
+    public nome: string= "Interessantinho";
 
       constructor(nome: string){
         this.nome = nome;
-        contador.total++;
+        Contador.total++;
       }
       static resetar(): void{
-        contador.total = 0;
+        Contador.total = 0;
 
       }
 }

@@ -1,15 +1,22 @@
 export class Veiculo {
-  constructor(
-    public    marca: string,
-    protected velocidade: number = 0
-  ) {}
+  protected modelo: string;
+  protected ano: number;
+  protected velocidade: number = 0;
 
-  acelerar(v: number): void {
-    this.velocidade += v;
+  constructor(modelo: string, ano: number) {
+    this.modelo = modelo;
+    this.ano = ano;
   }
 
-  descrever(): string {
-    return `${this.marca} a ${this.velocidade} km/h`;
+  acelerar(valor: number): void {
+    this.velocidade += valor;
+    console.log(`${this.modelo} acelerou para ${this.velocidade} km/h`);
+  }
+
+  frear(valor: number): void {
+    this.velocidade -= valor;
+    if (this.velocidade < 0) this.velocidade = 0;
+
+    console.log(`${this.modelo} reduziu para ${this.velocidade} km/h`);
   }
 }
-

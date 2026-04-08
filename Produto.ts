@@ -1,4 +1,4 @@
-class Rondap {
+export class Produto {
 
     readonly nome_produto: string = "Agrotóxico Rondap";
     private codigo: number = 101010;
