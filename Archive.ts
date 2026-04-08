@@ -3,6 +3,7 @@ let num2: number = 1;
 
 
      function soma (num1: number, num2:number): number{
+        
        return num1+num2;
 
 

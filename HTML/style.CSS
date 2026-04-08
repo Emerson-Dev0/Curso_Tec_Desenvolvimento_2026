@@ -1,0 +1,73 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+}
+
+/* Container principal */
+.container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 25px;
+    border: 56px solid #00ffff;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Títulos */
+h1, h2, h3 {
+    text-align: center;
+}
+
+/* Espaçamento geral do formulário */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Inputs mais bonitos */
+input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Radio e checkbox alinhados */
+.opcoes {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* Caixa azul */
+.azul {
+    height: 120px;
+    width: 120px;
+    margin: 20px auto;
+    background-color: rgba(0, 255, 255, 0.651);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    
+}
+
+/* Caixa vermelha */
+.vermelho {
+    height: 80px;
+    width: 80px;
+    background-color: rgb(253, 13, 5);
+    border-radius: 6px;
+}
+
+/* Caixa rosa */
+#rosa {
+    height: 100px;
+    width: 100px;
+    background-color: pink;
+    margin: 20px auto;
+    border-radius: 10px;
+}
