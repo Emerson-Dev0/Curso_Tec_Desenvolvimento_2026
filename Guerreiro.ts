@@ -1,4 +1,4 @@
-import { Personagem } from "./Personagem";
+import { Personagem } from "./Personagem.ts";
 
 export class Guerreiro extends Personagem{
     constructor(nome: string, poder_de_ataque: number, vida: number){
@@ -6,7 +6,7 @@ export class Guerreiro extends Personagem{
     }
 
    public atacar(persona: Personagem): void {
-         console.log('${this.nome} Xablau');
+         console.log(` ${this.nome} Xablau`);
          persona.sofreu_dano(this.poder_de_ataque);
     }
 }
