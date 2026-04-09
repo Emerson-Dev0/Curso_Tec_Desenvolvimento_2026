@@ -1,10 +1,9 @@
 {
-  "type":"module",
+  "type": "module",
   "name": "curso_tec_desenvolvimento_2026",
   "version": "1.0.0",
   "description": "Diretório criado para armazenar o conteúdo ensinado no crurso.",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/Emerson-Dev0/Curso_Tec_Desenvolvimento_2026/issues"
   },
-  "homepage": "https://github.com/Emerson-Dev0/Curso_Tec_Desenvolvimento_2026#readme"
+  "homepage": "https://github.com/Emerson-Dev0/Curso_Tec_Desenvolvimento_2026#readme",
+  "dependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
 }
