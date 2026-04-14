@@ -4,33 +4,34 @@
 <head>
   <meta charset="UTF-8">
   <title>Calculadora</title>
+    <script src="..\Typescript\Calculadora.js"></script>
   <link rel="stylesheet" href="style_1.css">
 </head>
 
 <body>
 
  <div class="Calculadora">
-
-<input type="text" class = "visor">
+    <input class = "resultado" id= "resultado" type="text" />
 
 <div class="Botoes">
      
-    <button>1</button>
-   <button>2</button>
-   <button>3</button>
-    <button>4</button>
-    <button>5</button>
-   <button>6</button>
-   <button>7</button>
-   <button>8</button>
-   <button>9</button>  
-    <button>0</button>
-    <button>+</button>
-    <button>-</button>
-    <button>*</button>
-    <button>/</button>
-    <button>AC</button>
-    <button>=</button>
+    <button onclick ="adicionar('1')">1</button>
+   <button onclick ="adicionar('2')">2</button>
+   <button onclick ="adicionar('3')">3</button>
+    <button onclick ="adicionar('4')">4</button>
+    <button onclick ="adicionar('5')">5</button>
+   <button onclick ="adicionar('6')">6</button>
+   <button onclick ="adicionar('7')">7</button>
+   <button onclick ="adicionar('8')">8</button>
+   <button onclick ="adicionar('9')">9</button>  
+    <button onclick ="adicionar('0')">0</button>
+    <button onclick ="adicionar('+')">+</button>
+    <button onclick ="adicionar('-')">-</button>
+    <button onclick ="adicionar('*')">*</button>
+    <button onclick ="adicionar('/')">/</button>
+    <button onclick ="adicionar('%')">%</button>
+    <button onclick ="limpar()">AC</button>
+    <button onclick ="calcular()">=</button>
     </div>
   </div>
 </body>

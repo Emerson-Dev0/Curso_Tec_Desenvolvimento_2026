@@ -1,9 +1,10 @@
-import { Personagem } from "./Personagem.ts";
+import { Personagem } from "./Personagem";
 
 export class Guerreiro extends Personagem{
-    constructor(nome: string, poder_de_ataque: number, vida: number){
-        super(nome, poder_de_ataque, vida);
-    }
+    constructor(nome: string, poder_de_ataque: number, vida: number) {
+  super(nome, poder_de_ataque, vida);
+  this.defesa = 0.05;
+}
 
          atacar(persona: Personagem): void {
     const tipoAtaque = this.gerarAtaque();
@@ -24,5 +25,6 @@ export class Guerreiro extends Personagem{
     }
 
     persona.sofreu_dano(dano);
+persona.curarSeNecessario();
     }
 }

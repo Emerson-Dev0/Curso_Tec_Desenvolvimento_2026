@@ -3,6 +3,7 @@ export abstract class Personagem {
   protected poder_de_ataque: number = 0;
   protected vida: number = 0;
   protected vidaMaxima: number;
+  protected defesa: number = 0;
 
   constructor(nome: string, poder_de_ataque: number, vida: number){
     this.nome = nome;
@@ -15,9 +16,14 @@ export abstract class Personagem {
     return this.vida > 0;
   }
 
-  sofreu_dano(dano: number): void {
-    this.vida = Math.max(0, this.vida - dano);
-    console.log(`${this.nome} recebeu ${dano} de dano. vida atual: ${this.vida}`);
+sofreu_dano(dano: number): void {
+  const danoFinal = dano * (1 - this.defesa);
+
+  this.vida = Math.max(0, this.vida - danoFinal);
+
+ console.log(`${this.nome} recebeu ${danoFinal} de dano. vida atual: ${this.vida}`);
+
+    
   }
 
   gerarAtaque(): number {
@@ -25,7 +31,7 @@ export abstract class Personagem {
   }
 
   curarSeNecessario(): void {
-    if (this.vida < this.vidaMaxima * 0.3) {
+   if (this.vida <= this.vidaMaxima * 0.5) {
       this.vida += this.vidaMaxima * 0.2;
 
       if (this.vida > this.vidaMaxima) {
