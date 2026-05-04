@@ -1,0 +1,17 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  "build": "esbuild src/JogoIndex.ts --bundle --outfile=jogo.js --platform=browser",
+  "watch": "esbuild src/JogoIndex.ts --bundle --outfile=jogo.js --platform=browser --watch"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "esbuild": "^0.28.0"
+  }
+}

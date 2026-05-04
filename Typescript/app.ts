@@ -1,6 +1,7 @@
-import { Mago } from "./mago";
-import { Guerreiro } from "./Guerreiro";
-import { Jogo } from "./Jogo";
+import { Mago } from "./mago.ts";
+import { Guerreiro } from "./Guerreiro.ts";
+import { Jogo } from "./Jogo.ts";
+
 const botao = document.getElementById("btnJogar")!;
 
 botao.addEventListener("click", () => {
@@ -16,11 +17,3 @@ function iniciarJogo() {
   let jogo = new Jogo();
   jogo.iniciar(mago, guerreiro);
 }
-
-const consoleDiv = document.getElementById("console")!;
-
-// substitui o console.log
-console.log = function(msg) {
-  consoleDiv.innerHTML += msg + "<br>";
-  consoleDiv.scrollTop = consoleDiv.scrollHeight;
-};

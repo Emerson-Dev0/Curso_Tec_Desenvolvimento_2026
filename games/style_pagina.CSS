@@ -1,0 +1,40 @@
+body {
+  text-align: center;
+}
+
+.personagens {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.lado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lado img {
+  width: 150px;
+}
+
+.hp1, .hp2 {
+  width: 100px;
+  height: 10px;
+  background-color: green;
+}
+
+.vs {
+  margin-top: 50px;
+  font-weight: bold;
+}
+
+.console {
+  margin-top: 50px;
+  border: 1px solid black;
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 10px;
+  text-align: left;
+}
