@@ -28,7 +28,7 @@ export abstract class Personagem {
 
     this.vida = Math.max(0, this.vida - danoFinal);
 
-    console.log(
+    this.log(
       `${this.nome} recebeu ${danoFinal} de dano. vida atual: ${this.vida}`,
     );
   }
@@ -45,12 +45,20 @@ export abstract class Personagem {
         this.vida = this.vidaMaxima;
       }
 
-      console.log(`${this.nome} regenerou vida! Vida atual: ${this.vida}`);
+      this.log(`${this.nome} regenerou vida! Vida atual: ${this.vida}`);
     }
   }
 
   getVida() {
     return this.vida;
+  }
+
+  public getImg() {
+    return this.imagem;
+  }
+
+  public log(mensagem: string) {
+    document.getElementById("console")!.innerHTML += '<p>' + mensagem + "</p>\n";
   }
 
   public abstract atacar(persona: Personagem): void;

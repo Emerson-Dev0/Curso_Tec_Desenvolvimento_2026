@@ -6,7 +6,7 @@ export class Jogo {
 
 
 
-  public iniciar(player1: Personagem, player2: Personagem) {
+  public async iniciar(player1: Personagem, player2: Personagem) {
 
     let turno = 1;
     let maxTurnos = 20;
@@ -16,7 +16,7 @@ export class Jogo {
       player2.isContinuaVivo() &&
       turno <= maxTurnos
     ) {
-      console.log("\n===================== turno " + turno + " =====================");
+      player2.log("\n===================== turno " + turno + " =====================");
 
       player1.atacar(player2);
 
@@ -29,17 +29,17 @@ export class Jogo {
 
     // resultado final
     if (player1.isContinuaVivo() && !player2.isContinuaVivo()) {
-      console.log(`${player1.nome} ganhou a luta!`);
+      player1.log(`${player1.nome} ganhou a luta!`);
       this.atualizarInterface(player1, player2);
-      this.delay();
+      await this.delay();
     } 
     else if (player2.isContinuaVivo() && !player1.isContinuaVivo()) {
-      console.log(`${player2.nome} ganhou a luta!`);
+      player2.log(`${player2.nome} ganhou a luta!`);
       this.atualizarInterface(player1, player2);
-      this.delay();
+      await this.delay();
     } 
     else {
-      console.log("A luta terminou em empate!");
+      player2.log("A luta terminou em empate!");
     }
   }
  
@@ -47,9 +47,6 @@ export class Jogo {
     return document.getElementById(id);
   }
 
-  public log(mensagem: string){
-    this.buscaComponenteHtml("console")!.textContent = mensagem + "\n";
-  }
  
   public atualizarInterface(jogadorUm:Personagem, jogadorDois:Personagem){
       (document.getElementById("imgJogadorUm")as HTMLImageElement).src = jogadorUm.getImg();
@@ -59,6 +56,8 @@ export class Jogo {
          this.buscaComponenteHtml("JogadorDoisVida")!.textContent = "HP: " + jogadorDois.getVida();
          this.buscaComponenteHtml("NomeUm")!.textContent = "HP: " + jogadorUm.nome;
          this.buscaComponenteHtml("NomeDois")!.textContent = "HP: " + jogadorDois.nome;
+
+         (this.buscaComponenteHtml("barraVida") as HTMLElement).style.width = (jogadorUm.getVida() / 300 * 100) + "%";
   }
   public delay(){
     return new Promise((x)=> setTimeout (x,800));

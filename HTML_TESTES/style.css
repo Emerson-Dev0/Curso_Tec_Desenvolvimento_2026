@@ -1,0 +1,42 @@
+@keyframes argb {
+  0% {
+    background-color: red;
+  }
+
+  25% {
+    background-color: blue;
+  }
+
+  50% {
+    background-color: green;
+  }
+
+  75% {
+    background-color: purple;
+  }
+
+  100% {
+    background-color: red;
+  }
+}
+
+.caixa {
+  width: 200px;
+  height: 200px;
+  background-color: green;
+  border-radius: 20px;
+}
+
+.mover_centro {
+  animation: irParaCentro 2s forwards;
+}
+
+@keyframes irParaCentro {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(50vw - 100px));
+  }
+}

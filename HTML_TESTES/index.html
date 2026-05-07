@@ -4,17 +4,98 @@
   <meta charset="UTF-8">
 
   <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      width: 100px;
+      height: 50px;
+      background-color: rgb(255, 249, 249);
+      color: black;
+      border: 1px solid black;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 40px;
+      transition: 0.3s;
+    }
+
+    .button:hover {
+      background-color: rgb(255, 0, 0);
+      width: 300px;
+      height: 300px;
+      color: white;
+    }
+
     .caixa {
       width: 200px;
       height: 200px;
       background-color: green;
       border-radius: 20px;
+      margin: 40px;
+      transition: 0.5s;
+    }
+
+    .caixa_mover_hover:hover {
+      transform: translateX(calc(50vw - 100px));
+    }
+
+    .caixa_teste:hover {
+      width: 150px;
+      height: 150px;
+      background-color: rgb(40, 142, 173);
+      border-radius: 150px;
+      margin: 100px;
+    }
+
+    @keyframes rodar {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes argb {
+      0% {
+        background-color: red;
+      }
+
+      25% {
+        background-color: blue;
+      }
+
+      50% {
+        background-color: green;
+      }
+
+      75% {
+        background-color: purple;
+      }
+
+      100% {
+        background-color: red;
+      }
+    }
+
+    .caixa_argb_girando {
+      animation: rodar 2s linear infinite, argb 3s linear infinite;
     }
   </style>
 </head>
+
 <body>
+  <div class="caixa caixa_mover_hover"></div>
 
   <div class="caixa"></div>
 
+  <div class="caixa caixa_teste"></div>
+
+  <button class="button">Sair</button>
+
+  <div class="caixa caixa_argb_girando"></div>
 </body>
 </html>
