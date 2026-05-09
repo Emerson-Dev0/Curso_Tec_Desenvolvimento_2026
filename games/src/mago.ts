@@ -7,6 +7,7 @@ export class Mago extends Personagem {
     this.defesa = 0.05;
   }
 
+  // O mago sorteia uma magia e causa dano de acordo com o ataque escolhido.
   atacar(persona: Personagem): void {
     const tipoAtaque = this.gerarAtaque();
 

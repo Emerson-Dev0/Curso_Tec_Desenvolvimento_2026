@@ -6,6 +6,7 @@ export class Guerreiro extends Personagem {
     this.defesa = 0.05;
   }
 
+  // O guerreiro sorteia um dos ataques e aplica dano no adversário.
   atacar(persona: Personagem): void {
     const tipoAtaque = this.gerarAtaque();
 

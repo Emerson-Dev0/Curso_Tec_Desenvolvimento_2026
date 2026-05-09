@@ -1,54 +1,60 @@
-<head>
-  <link rel="stylesheet" href="style_pagina.CSS">
-</head>
-
-
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Batalha</title>
-  <link rel="stylesheet" href="style_pagina.css">
+  <link rel="stylesheet" href="style_pagina.CSS">
 </head>
 
 <body>
+  <main class="pagina">
+    <header class="topo">
+      <p class="subtitulo">Arena de turnos</p>
+      <h1>Batalha</h1>
+      <p id="turnoAtual" class="turno">Clique em Batalhar para começar</p>
+    </header>
 
-<h1>BATALHA</h1>
+    <section class="arena" aria-label="Arena da batalha">
+      <div class="personagens">
+        <article class="lado">
+          <img id="imgJogadorUm" src="./src/imagem1.png" alt="Imagem do Guerreiro">
+          <h2 id="NomeUm">Guerreiro</h2>
+          <p id="JogadorUmVida" class="vida">HP: 300</p>
+          <div class="barra">
+            <div id="barraVida" class="hp hp-guerreiro"></div>
+          </div>
+        </article>
 
-<div class="arena">
+        <div class="vs">VS</div>
 
-  <div class="personagens">
-    
-    <!-- Guerreiro -->
-    <div class="lado">
-      <img src="./src/imagem2.png" alt="Guerreiro">
-      <p>Guerreiro</p>
+        <article class="lado">
+          <img id="imgJogadorDois" src="./src/imagem2.png" alt="Imagem do Mago">
+          <h2 id="NomeDois">Mago</h2>
+          <p id="JogadorDoisVida" class="vida">HP: 200</p>
+          <div class="barra">
+            <div class="hp hp-mago"></div>
+          </div>
+        </article>
+      </div>
 
-      <p id="vida">HP:200</p>
-      <div id="barraVida" class="hp1"></div>
-    </div>
+      <div class="acoes principais">
+        <button id="Batalhar" type="button">Batalhar</button>
+      </div>
+    </section>
 
-    <div class="vs">VS</div>
+    <section class="painel">
+      <div class="comandos" aria-label="Comandos da batalha">
+        <button id="btnAtacar" type="button">Atacar</button>
+        <button id="btnDefender" type="button">Defender</button>
+        <button id="btnCurar" type="button">Curar</button>
+        <button id="btnPassarTurno" type="button">Próximo Turno</button>
+      </div>
 
-    <!-- Mago -->
-    <div class="lado">
-      <img src="./src/imagem1.png" alt="Mago">
-      <p>Mago</p>
+      <div id="console" class="console" aria-live="polite"></div>
+    </section>
+  </main>
 
-     <p id="vida">HP:200</p>
-      <div id="barraVida" class="hp2"></div>
-    </div>
-
-  </div>
-
-  <button id="Batalhar">Batalhar</button>
-  <button id="btnReiniciar">Reiniciar</button>
-
-  <div id="console" class="console"></div>
-    <p></p>
-  </div>
-
-</div>
-
-<script src="Jogo.js"></script>
-
+  <script src="Jogo.js"></script>
 </body>
+</html>

@@ -1,4 +1,5 @@
 export abstract class Personagem {
+  // Atributos básicos que todo personagem do jogo precisa ter.
   public nome: string = "Personagem";
   protected poder_de_ataque: number = 0;
   public vida: number = 0;
@@ -23,6 +24,7 @@ export abstract class Personagem {
     return this.vida > 0;
   }
 
+  // Calcula o dano recebido considerando a defesa do personagem.
   sofreu_dano(dano: number): void {
     const danoFinal = dano * (1 - this.defesa);
 
@@ -37,6 +39,7 @@ export abstract class Personagem {
     return Math.floor(Math.random() * 3);
   }
 
+  // Recupera um pouco de vida quando o personagem está com pouca vida.
   curarSeNecessario(): void {
     if (this.vida <= this.vidaMaxima * 0.5) {
       this.vida += this.vidaMaxima * 0.2;
@@ -61,5 +64,6 @@ export abstract class Personagem {
     document.getElementById("console")!.innerHTML += '<p>' + mensagem + "</p>\n";
   }
 
+  // Cada classe filha define sua própria forma de atacar.
   public abstract atacar(persona: Personagem): void;
 }
