@@ -2,8 +2,8 @@ import { Personagem } from "./Personagem";
 
 export class Guerreiro extends Personagem {
   constructor(nome: string, poder_de_ataque: number, vida: number) {
-    super(nome, poder_de_ataque, vida, "./imagem1.png");
-    this.defesa = 0.05;
+    super(nome, poder_de_ataque, vida, "./src/imagem2.png");
+    this.defesa = 0.12;
   }
 
   // O guerreiro sorteia um dos ataques e aplica dano no adversário.
@@ -13,19 +13,18 @@ export class Guerreiro extends Personagem {
     let dano = 0;
 
     if (tipoAtaque === 0) {
-      dano = this.poder_de_ataque * 1.1;
+      dano = this.poder_de_ataque * 0.9;
       this.log(`${this.nome} Me dê o cuuuuubo.`);
     } 
     else if (tipoAtaque === 1) {
-      dano = this.poder_de_ataque * 1.8;
+      dano = this.poder_de_ataque * 1.15;
       this.log(`${this.nome} Coffe with bread.`);
     } 
     else {
-      dano = this.poder_de_ataque * 2.1;
+      dano = this.poder_de_ataque * 1.35;
       this.log(`${this.nome} BEANS WHIT FLAVOR? 💀`);
     }
 
     persona.sofreu_dano(dano);
-    persona.curarSeNecessario();
   }
 }

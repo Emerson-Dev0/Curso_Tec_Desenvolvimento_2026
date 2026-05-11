@@ -3,77 +3,30 @@ import { Mago } from "./mago";
 import { Personagem } from "./Personagem";
 
 export class Jogo {
-  private turnoAtual: string = "";
   private jogadorUm!: Personagem;
   private jogadorDois!: Personagem;
+  private turnoAtual: string = "";
+  private acabou: boolean = false;
 
-  // Prepara uma nova batalha e mostra os dados iniciais na tela.
   public iniciar(player1: Personagem, player2: Personagem): void {
     this.jogadorUm = player1;
     this.jogadorDois = player2;
-
     this.turnoAtual = this.jogadorUm.nome;
+    this.acabou = false;
 
-    this.limparLog();
-    this.atualizarInterface(this.jogadorUm, this.jogadorDois);
-    this.atualizarTextoTurno();
-
-    this.adicionarLog("A batalha começou!");
+    this.limparConsole();
+    this.ativarBotoes(true);
+    this.atualizarTela();
+    this.mostrarTurno();
+    this.log("A batalha começou!");
   }
 
-  private buscaComponenteHtml(id: string): HTMLElement | null {
-    return document.getElementById(id);
-  }
-
-  // Atualiza nomes, imagens e vidas dos jogadores no HTML.
-  public atualizarInterface(jogadorUm: Personagem, jogadorDois: Personagem): void {
-    const imgJogadorUm = document.getElementById("imgJogadorUm") as HTMLImageElement | null;
-    const imgJogadorDois = document.getElementById("imgJogadorDois") as HTMLImageElement | null;
-
-    if (imgJogadorUm !== null) {
-      imgJogadorUm.src = jogadorUm.getImg();
-    }
-
-    if (imgJogadorDois !== null) {
-      imgJogadorDois.src = jogadorDois.getImg();
-    }
-
-    const vidaJogadorUm = this.buscaComponenteHtml("JogadorUmVida");
-    const vidaJogadorDois = this.buscaComponenteHtml("JogadorDoisVida");
-    const nomeUm = this.buscaComponenteHtml("NomeUm");
-    const nomeDois = this.buscaComponenteHtml("NomeDois");
-
-    if (vidaJogadorUm !== null) {
-      vidaJogadorUm.textContent = "HP: " + jogadorUm.getVida();
-    }
-
-    if (vidaJogadorDois !== null) {
-      vidaJogadorDois.textContent = "HP: " + jogadorDois.getVida();
-    }
-
-    if (nomeUm !== null) {
-      nomeUm.textContent = jogadorUm.nome;
-    }
-
-    if (nomeDois !== null) {
-      nomeDois.textContent = jogadorDois.nome;
-    }
-
-    const barraVida = this.buscaComponenteHtml("barraVida") as HTMLElement | null;
-
-    if (barraVida !== null) {
-      barraVida.style.width = (jogadorUm.getVida() / 300 * 100) + "%";
-    }
-  }
-
-  // Executa o ataque do jogador que está com o turno.
   public Atacar(): void {
-    if (!this.jogoFoiIniciado()) {
-      this.adicionarLog("Clique em Batalhar primeiro!");
+    if (!this.podeJogar()) {
       return;
     }
 
-    this.adicionarLog("A escolha do turno foi " + this.turnoAtual + ": ATAQUE!");
+    this.log(this.turnoAtual + " atacou!");
 
     if (this.turnoAtual === this.jogadorUm.nome) {
       this.jogadorUm.atacar(this.jogadorDois);
@@ -81,10 +34,10 @@ export class Jogo {
       this.jogadorDois.atacar(this.jogadorUm);
     }
 
-    this.atualizarInterface(this.jogadorUm, this.jogadorDois);
+    this.atualizarTela();
 
     if (!this.jogadorUm.isContinuaVivo() || !this.jogadorDois.isContinuaVivo()) {
-      this.verificarVencedor();
+      this.finalizarJogo();
       return;
     }
 
@@ -92,146 +45,155 @@ export class Jogo {
   }
 
   public Defender(): void {
-    if (!this.jogoFoiIniciado()) {
-      this.adicionarLog("Clique em Batalhar primeiro!");
+    if (!this.podeJogar()) {
       return;
     }
 
-    this.adicionarLog("A escolha do turno foi " + this.turnoAtual + ": DEFESA!");
-
+    this.getJogadorAtual().defender();
+    this.atualizarTela();
     this.passarTurno();
   }
 
   public Curar(): void {
-    if (!this.jogoFoiIniciado()) {
-      this.adicionarLog("Clique em Batalhar primeiro!");
+    if (!this.podeJogar()) {
       return;
     }
 
-    this.adicionarLog("A escolha do turno foi " + this.turnoAtual + ": CURAR!");
-
+    this.getJogadorAtual().curar();
+    this.atualizarTela();
     this.passarTurno();
   }
 
-  // Alterna o turno entre os dois jogadores.
   public passarTurno(): void {
-    if (!this.jogoFoiIniciado()) {
-      this.adicionarLog("Clique em Batalhar primeiro!");
+    if (!this.podeJogar()) {
       return;
     }
 
+    let proximoJogador: Personagem;
+
     if (this.turnoAtual === this.jogadorUm.nome) {
       this.turnoAtual = this.jogadorDois.nome;
+      proximoJogador = this.jogadorDois;
     } else {
       this.turnoAtual = this.jogadorUm.nome;
+      proximoJogador = this.jogadorUm;
     }
 
-    this.atualizarTextoTurno();
-    this.atualizarLogTurno();
+    proximoJogador.finalizarDefesa();
+    this.atualizarTela();
+    this.mostrarTurno();
   }
 
-  private atualizarTextoTurno(): void {
-    this.adicionarLog("Agora é a vez do " + this.turnoAtual + " jogar!");
+  private atualizarTela(): void {
+    const imgUm = document.getElementById("imgJogadorUm") as HTMLImageElement;
+    const imgDois = document.getElementById("imgJogadorDois") as HTMLImageElement;
+    const barraUm = document.getElementById("barraVida") as HTMLElement;
+    const barraDois = document.getElementById("barraVidaDois") as HTMLElement;
+    const barraDefesaUm = document.getElementById("barraDefesaUm") as HTMLElement;
+    const barraDefesaDois = document.getElementById("barraDefesaDois") as HTMLElement;
+    const cardUm = document.getElementById("cardJogadorUm") as HTMLElement;
+    const cardDois = document.getElementById("cardJogadorDois") as HTMLElement;
+
+    imgUm.src = this.jogadorUm.getImg();
+    imgDois.src = this.jogadorDois.getImg();
+
+    document.getElementById("NomeUm")!.textContent = this.jogadorUm.nome;
+    document.getElementById("NomeDois")!.textContent = this.jogadorDois.nome;
+    document.getElementById("JogadorUmVida")!.textContent = "HP: " + this.jogadorUm.getVida();
+    document.getElementById("JogadorDoisVida")!.textContent = "HP: " + this.jogadorDois.getVida();
+
+    barraUm.style.width = this.calcularVida(this.jogadorUm) + "%";
+    barraDois.style.width = this.calcularVida(this.jogadorDois) + "%";
+    barraDefesaUm.style.width = this.calcularDefesa(this.jogadorUm) + "%";
+    barraDefesaDois.style.width = this.calcularDefesa(this.jogadorDois) + "%";
+
+    cardUm.classList.toggle("morto", !this.jogadorUm.isContinuaVivo());
+    cardDois.classList.toggle("morto", !this.jogadorDois.isContinuaVivo());
   }
 
-  private atualizarLogTurno(): void {
-    const textoTurno = document.getElementById("turnoAtual");
+  private calcularVida(jogador: Personagem): number {
+    return Math.max(0, (jogador.getVida() / jogador.getVidaMaxima()) * 100);
+  }
 
-    if (textoTurno !== null) {
-      textoTurno.textContent = "Turno Atual: " + this.turnoAtual;
+  private calcularDefesa(jogador: Personagem): number {
+    return jogador.getDefesaTotal() * 100;
+  }
+
+  private getJogadorAtual(): Personagem {
+    if (this.turnoAtual === this.jogadorUm.nome) {
+      return this.jogadorUm;
     }
+
+    return this.jogadorDois;
   }
 
-  // Confere se algum jogador ficou sem vida e mostra o resultado.
-  private verificarVencedor(): void {
-    if (this.jogadorUm.isContinuaVivo() && !this.jogadorDois.isContinuaVivo()) {
-      this.adicionarLog(this.jogadorUm.nome + " ganhou a luta!");
-    } else if (this.jogadorDois.isContinuaVivo() && !this.jogadorUm.isContinuaVivo()) {
-      this.adicionarLog(this.jogadorDois.nome + " ganhou a luta!");
+  private finalizarJogo(): void {
+    this.acabou = true;
+    this.ativarBotoes(false);
+    document.getElementById("turnoAtual")!.textContent = "Fim de jogo";
+
+    if (this.jogadorUm.isContinuaVivo()) {
+      this.log(this.jogadorUm.nome + " ganhou a luta!");
+    } else if (this.jogadorDois.isContinuaVivo()) {
+      this.log(this.jogadorDois.nome + " ganhou a luta!");
     } else {
-      this.adicionarLog("A luta terminou em empate!");
+      this.log("A luta terminou em empate!");
     }
   }
 
-  private adicionarLog(mensagem: string): void {
-    const consoleBatalha = document.getElementById("console");
-
-    if (consoleBatalha !== null) {
-      consoleBatalha.innerHTML += `<p>${mensagem}</p>`;
-      consoleBatalha.scrollTop = consoleBatalha.scrollHeight;
+  private podeJogar(): boolean {
+    if (this.jogadorUm === undefined || this.jogadorDois === undefined) {
+      this.log("Clique em Batalhar primeiro!");
+      return false;
     }
+
+    if (this.acabou) {
+      this.log("A batalha já terminou. Clique em Batalhar para jogar de novo.");
+      return false;
+    }
+
+    return true;
   }
 
-  private limparLog(): void {
-    const consoleBatalha = document.getElementById("console");
-
-    if (consoleBatalha !== null) {
-      consoleBatalha.innerHTML = "";
-    }
+  private mostrarTurno(): void {
+    document.getElementById("turnoAtual")!.textContent = "Turno atual: " + this.turnoAtual;
+    this.log("Agora é a vez do " + this.turnoAtual + " jogar!");
   }
 
-  private jogoFoiIniciado(): boolean {
-    return this.jogadorUm !== undefined && this.jogadorDois !== undefined;
+  private ativarBotoes(ativo: boolean): void {
+    const botoes = ["btnAtacar", "btnDefender", "btnCurar", "btnPassarTurno"];
+
+    botoes.forEach((id) => {
+      const botao = document.getElementById(id) as HTMLButtonElement;
+      botao.disabled = !ativo;
+    });
+  }
+
+  private log(mensagem: string): void {
+    const consoleBatalha = document.getElementById("console")!;
+    consoleBatalha.innerHTML += "<p>" + mensagem + "</p>";
+    consoleBatalha.scrollTop = consoleBatalha.scrollHeight;
+  }
+
+  private limparConsole(): void {
+    document.getElementById("console")!.innerHTML = "";
   }
 }
 
 let jogo: Jogo = new Jogo();
 
-// Cria os personagens padrão e começa uma nova partida.
 function construirJogo(): void {
-  const guerreiro: Guerreiro = new Guerreiro("Guerreiro", 90, 300);
-  const mago: Mago = new Mago("Mago", 120, 200);
+  const guerreiro = new Guerreiro("Guerreiro", 70, 300);
+  const mago = new Mago("Mago", 85, 240);
 
   jogo = new Jogo();
   jogo.iniciar(guerreiro, mago);
 }
 
-// Liga os botões da página às ações do jogo.
 window.addEventListener("DOMContentLoaded", () => {
-  const btnBatalhar = document.getElementById("Batalhar");
-  const btnAtacar = document.getElementById("btnAtacar");
-  const btnDefender = document.getElementById("btnDefender");
-  const btnCurar = document.getElementById("btnCurar");
-  const btnProximoTurno = document.getElementById("btnPassarTurno");
-
-  console.log("Batalhar:", btnBatalhar);
-  console.log("Atacar:", btnAtacar);
-  console.log("Defender:", btnDefender);
-  console.log("Curar:", btnCurar);
-  console.log("Passar turno:", btnProximoTurno);
-
-  if (btnBatalhar !== null) {
-    btnBatalhar.addEventListener("click", () => {
-      console.log("Clicou em Batalhar");
-      construirJogo();
-    });
-  }
-
-  if (btnAtacar !== null) {
-    btnAtacar.addEventListener("click", () => {
-      console.log("Clicou em Atacar");
-      jogo.Atacar();
-    });
-  }
-
-  if (btnDefender !== null) {
-    btnDefender.addEventListener("click", () => {
-      console.log("Clicou em Defender");
-      jogo.Defender();
-    });
-  }
-
-  if (btnCurar !== null) {
-    btnCurar.addEventListener("click", () => {
-      console.log("Clicou em Curar");
-      jogo.Curar();
-    });
-  }
-
-  if (btnProximoTurno !== null) {
-    btnProximoTurno.addEventListener("click", () => {
-      console.log("Clicou em Passar Turno");
-      jogo.passarTurno();
-    });
-  }
+  document.getElementById("Batalhar")?.addEventListener("click", construirJogo);
+  document.getElementById("btnAtacar")?.addEventListener("click", () => jogo.Atacar());
+  document.getElementById("btnDefender")?.addEventListener("click", () => jogo.Defender());
+  document.getElementById("btnCurar")?.addEventListener("click", () => jogo.Curar());
+  document.getElementById("btnPassarTurno")?.addEventListener("click", () => jogo.passarTurno());
 });

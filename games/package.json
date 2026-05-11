@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-  "build": "esbuild src/Jogo.ts --bundle --outfile=Jogo.js --platform=browser",
-  "watch": "esbuild src/Jogo.ts --bundle --outfile=Jogo.js --platform=browser --watch"
+  "build": "esbuild ./src/Jogo.ts --bundle --outfile=Jogo.js --platform=browser",
+  "watch": "esbuild ./src/Jogo.ts --bundle --outfile=Jogo.js --platform=browser --watch"
 },
   "keywords": [],
   "author": "",
