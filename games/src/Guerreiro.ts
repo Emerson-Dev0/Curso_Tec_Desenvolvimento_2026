@@ -7,7 +7,7 @@ export class Guerreiro extends Personagem {
   }
 
   // O guerreiro sorteia um dos ataques e aplica dano no adversário.
-  atacar(persona: Personagem): void {
+  atacar(adversario: Personagem): void {
     const tipoAtaque = this.gerarAtaque();
 
     let dano = 0;
@@ -25,6 +25,6 @@ export class Guerreiro extends Personagem {
       this.log(`${this.nome} BEANS WHIT FLAVOR? 💀`);
     }
 
-    persona.sofreu_dano(dano);
+    adversario.sofreu_dano(this.calcularDano(dano));
   }
 }
