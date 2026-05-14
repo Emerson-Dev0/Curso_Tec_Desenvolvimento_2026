@@ -1,7 +1,153 @@
 "use strict";
 (() => {
+  // src/GerenciadorLog.ts
+  var GerenciadorLog = class _GerenciadorLog {
+    static {
+      this.fila = [];
+    }
+    static {
+      this.escrevendo = false;
+    }
+    static {
+      this.textoAtual = "";
+    }
+    static {
+      this.indiceTexto = 0;
+    }
+    static {
+      this.elementoTexto = null;
+    }
+    static {
+      this.elementoCursor = null;
+    }
+    static {
+      this.atalhosAtivados = false;
+    }
+    static {
+      // Diminua esse numero para o texto aparecer mais rapido.
+      this.velocidadeDigitacao = 25;
+    }
+    static {
+      this.pausaEntreMensagens = 180;
+    }
+    // Adiciona uma mensagem na fila do log.
+    static adicionarMensagem(mensagem) {
+      _GerenciadorLog.prepararAtalhos();
+      _GerenciadorLog.fila.push(mensagem);
+      if (!_GerenciadorLog.escrevendo) {
+        _GerenciadorLog.escreverProximaMensagem();
+      }
+    }
+    // Limpa o log e para qualquer texto que ainda esteja sendo digitado.
+    static limpar() {
+      if (_GerenciadorLog.tempo !== void 0) {
+        window.clearTimeout(_GerenciadorLog.tempo);
+      }
+      _GerenciadorLog.fila = [];
+      _GerenciadorLog.escrevendo = false;
+      _GerenciadorLog.textoAtual = "";
+      _GerenciadorLog.indiceTexto = 0;
+      _GerenciadorLog.elementoTexto = null;
+      _GerenciadorLog.elementoCursor = null;
+      const consoleBatalha = document.getElementById("console");
+      if (consoleBatalha !== null) {
+        consoleBatalha.innerHTML = "";
+      }
+    }
+    // Permite pular a animacao clicando no log ou apertando espaco.
+    static prepararAtalhos() {
+      if (_GerenciadorLog.atalhosAtivados) {
+        return;
+      }
+      const consoleBatalha = document.getElementById("console");
+      consoleBatalha?.addEventListener("click", () => _GerenciadorLog.pularAnimacao());
+      document.addEventListener("keydown", (evento) => {
+        if (evento.code === "Space" && _GerenciadorLog.escrevendo) {
+          evento.preventDefault();
+          _GerenciadorLog.pularAnimacao();
+        }
+      });
+      _GerenciadorLog.atalhosAtivados = true;
+    }
+    // Pega a proxima mensagem da fila e prepara o paragrafo no HTML.
+    static escreverProximaMensagem() {
+      const proximaMensagem = _GerenciadorLog.fila.shift();
+      if (proximaMensagem === void 0) {
+        _GerenciadorLog.escrevendo = false;
+        return;
+      }
+      const consoleBatalha = document.getElementById("console");
+      if (consoleBatalha === null) {
+        _GerenciadorLog.escrevendo = false;
+        return;
+      }
+      const paragrafo = document.createElement("p");
+      const texto = document.createElement("span");
+      const cursor = document.createElement("span");
+      cursor.className = "cursorLog";
+      cursor.textContent = "|";
+      paragrafo.appendChild(texto);
+      paragrafo.appendChild(cursor);
+      consoleBatalha.appendChild(paragrafo);
+      _GerenciadorLog.escrevendo = true;
+      _GerenciadorLog.textoAtual = proximaMensagem;
+      _GerenciadorLog.indiceTexto = 0;
+      _GerenciadorLog.elementoTexto = texto;
+      _GerenciadorLog.elementoCursor = cursor;
+      _GerenciadorLog.digitarMensagem();
+    }
+    // Escreve a mensagem atual letra por letra.
+    static digitarMensagem() {
+      if (_GerenciadorLog.elementoTexto === null) {
+        return;
+      }
+      if (_GerenciadorLog.indiceTexto < _GerenciadorLog.textoAtual.length) {
+        _GerenciadorLog.elementoTexto.textContent += _GerenciadorLog.textoAtual.charAt(_GerenciadorLog.indiceTexto);
+        _GerenciadorLog.indiceTexto++;
+        _GerenciadorLog.rolarParaBaixo();
+        _GerenciadorLog.tempo = window.setTimeout(
+          () => _GerenciadorLog.digitarMensagem(),
+          _GerenciadorLog.velocidadeDigitacao
+        );
+        return;
+      }
+      _GerenciadorLog.finalizarMensagem();
+    }
+    // Termina uma mensagem e chama a proxima depois de uma pausa.
+    static finalizarMensagem() {
+      _GerenciadorLog.elementoCursor?.remove();
+      _GerenciadorLog.elementoTexto = null;
+      _GerenciadorLog.elementoCursor = null;
+      _GerenciadorLog.textoAtual = "";
+      _GerenciadorLog.indiceTexto = 0;
+      _GerenciadorLog.rolarParaBaixo();
+      _GerenciadorLog.tempo = window.setTimeout(
+        () => _GerenciadorLog.escreverProximaMensagem(),
+        _GerenciadorLog.pausaEntreMensagens
+      );
+    }
+    // Completa a mensagem atual de uma vez.
+    static pularAnimacao() {
+      if (!_GerenciadorLog.escrevendo || _GerenciadorLog.elementoTexto === null) {
+        return;
+      }
+      if (_GerenciadorLog.tempo !== void 0) {
+        window.clearTimeout(_GerenciadorLog.tempo);
+      }
+      _GerenciadorLog.elementoTexto.textContent = _GerenciadorLog.textoAtual;
+      _GerenciadorLog.finalizarMensagem();
+    }
+    // Mantem a caixa do log sempre mostrando a ultima mensagem.
+    static rolarParaBaixo() {
+      const consoleBatalha = document.getElementById("console");
+      if (consoleBatalha !== null) {
+        consoleBatalha.scrollTop = consoleBatalha.scrollHeight;
+      }
+    }
+  };
+
   // src/Personagem.ts
-  var Personagem = class _Personagem {
+  var Personagem = class {
     constructor(nome, poder_de_ataque, vida, imagem) {
       // Atributos basicos que todo personagem do jogo precisa ter.
       this.nome = "Personagem";
@@ -22,35 +168,6 @@
       this.vidaMaxima = vida;
       this.imagem = imagem;
     }
-    static {
-      // Configuracoes do log com efeito de digitacao.
-      this.filaLog = [];
-    }
-    static {
-      this.escrevendoLog = false;
-    }
-    static {
-      this.textoAtualLog = "";
-    }
-    static {
-      this.indiceTextoLog = 0;
-    }
-    static {
-      this.elementoTextoLog = null;
-    }
-    static {
-      this.elementoCursorLog = null;
-    }
-    static {
-      this.atalhosLogAtivados = false;
-    }
-    static {
-      // Diminua esse numero para o texto aparecer mais rapido.
-      this.velocidadeDigitacaoLog = 25;
-    }
-    static {
-      this.pausaEntreMensagensLog = 180;
-    }
     isContinuaVivo() {
       return this.vida > 0;
     }
@@ -61,9 +178,9 @@
       const danoFinal = Math.round(danoBruto * (1 - defesaTotal));
       this.vida = Math.max(0, this.vida - danoFinal);
       if (this.defesaExtra > 0) {
-        this.log(`${this.nome} bloqueou ${danoBruto - danoFinal} de dano com a defesa.`);
+        GerenciadorLog.adicionarMensagem(`${this.nome} bloqueou ${danoBruto - danoFinal} de dano com a defesa.`);
       }
-      this.log(
+      GerenciadorLog.adicionarMensagem(
         `${this.nome} recebeu ${danoFinal} de dano. vida atual: ${this.vida}`
       );
     }
@@ -74,17 +191,28 @@
     calcularDano(danoBase) {
       return danoBase * (1 + this.bonusAtaque);
     }
+    aplicarBuffPeriodo(dano, tipoAtaque, periodoAtual) {
+      if (tipoAtaque === "neutro") {
+        return dano;
+      }
+      if (tipoAtaque === periodoAtual) {
+        GerenciadorLog.adicionarMensagem("O ataque recebeu buff por causa do periodo atual!");
+        return dano * 1.2;
+      }
+      GerenciadorLog.adicionarMensagem("O ataque recebeu debuff por causa do periodo atual!");
+      return dano * 0.8;
+    }
     defender() {
       if (!this.isContinuaVivo()) {
         return;
       }
       this.defesaExtra = this.valorDefesaExtra;
-      this.log(`${this.nome} se defendeu! Defesa aumentada no proximo turno do oponente.`);
+      GerenciadorLog.adicionarMensagem(`${this.nome} se defendeu! Defesa aumentada no proximo turno do oponente.`);
     }
     finalizarDefesa() {
       if (this.defesaExtra > 0) {
         this.defesaExtra = 0;
-        this.log(`${this.nome} baixou a defesa.`);
+        GerenciadorLog.adicionarMensagem(`${this.nome} baixou a defesa.`);
       }
     }
     curar() {
@@ -92,14 +220,14 @@
         return;
       }
       if (this.vida >= this.vidaMaxima) {
-        this.log(`${this.nome} ja esta com a vida cheia.`);
+        GerenciadorLog.adicionarMensagem(`${this.nome} ja esta com a vida cheia.`);
         return;
       }
       this.vida += this.vidaMaxima * 0.25;
       if (this.vida > this.vidaMaxima) {
         this.vida = this.vidaMaxima;
       }
-      this.log(`${this.nome} recuperou vida! Vida atual: ${this.vida}`);
+      GerenciadorLog.adicionarMensagem(`${this.nome} recuperou vida! Vida atual: ${this.vida}`);
     }
     recuperarVida(percentual) {
       if (!this.isContinuaVivo()) {
@@ -107,7 +235,7 @@
       }
       const cura = this.vidaMaxima * percentual;
       this.vida = Math.min(this.vidaMaxima, this.vida + cura);
-      this.log(`${this.nome} recuperou vida! Vida atual: ${this.vida}`);
+      GerenciadorLog.adicionarMensagem(`${this.nome} recuperou vida! Vida atual: ${this.vida}`);
     }
     // Reduz a defesa por alguns turnos, usado pelo evento de terremoto.
     reduzirDefesaTemporaria(valor, turnos) {
@@ -131,14 +259,14 @@
         this.defesaEventoTurnos--;
         if (this.defesaEventoTurnos === 0) {
           this.defesaEventoExtra = 0;
-          this.log(`${this.nome} recuperou o equilibrio.`);
+          GerenciadorLog.adicionarMensagem(`${this.nome} recuperou o equilibrio.`);
         }
       }
       if (this.bonusAtaqueTurnos > 0) {
         this.bonusAtaqueTurnos--;
         if (this.bonusAtaqueTurnos === 0) {
           this.bonusAtaque = 0;
-          this.log(`${this.nome} nao esta mais enfurecido.`);
+          GerenciadorLog.adicionarMensagem(`${this.nome} nao esta mais enfurecido.`);
         }
       }
     }
@@ -157,123 +285,6 @@
     getImg() {
       return this.imagem;
     }
-    log(mensagem) {
-      _Personagem.adicionarMensagemLog(mensagem);
-    }
-    // Adiciona uma mensagem na fila do log.
-    static adicionarMensagemLog(mensagem) {
-      _Personagem.prepararAtalhosLog();
-      _Personagem.filaLog.push(mensagem);
-      if (!_Personagem.escrevendoLog) {
-        _Personagem.escreverProximaMensagemLog();
-      }
-    }
-    // Limpa o log e para qualquer texto que ainda esteja sendo digitado.
-    static limparLog() {
-      if (_Personagem.tempoLog !== void 0) {
-        window.clearTimeout(_Personagem.tempoLog);
-      }
-      _Personagem.filaLog = [];
-      _Personagem.escrevendoLog = false;
-      _Personagem.textoAtualLog = "";
-      _Personagem.indiceTextoLog = 0;
-      _Personagem.elementoTextoLog = null;
-      _Personagem.elementoCursorLog = null;
-      const consoleBatalha = document.getElementById("console");
-      if (consoleBatalha !== null) {
-        consoleBatalha.innerHTML = "";
-      }
-    }
-    // Permite pular a animacao clicando no log ou apertando espaco.
-    static prepararAtalhosLog() {
-      if (_Personagem.atalhosLogAtivados) {
-        return;
-      }
-      const consoleBatalha = document.getElementById("console");
-      consoleBatalha?.addEventListener("click", () => _Personagem.pularAnimacaoLog());
-      document.addEventListener("keydown", (evento) => {
-        if (evento.code === "Space" && _Personagem.escrevendoLog) {
-          evento.preventDefault();
-          _Personagem.pularAnimacaoLog();
-        }
-      });
-      _Personagem.atalhosLogAtivados = true;
-    }
-    // Pega a proxima mensagem da fila e prepara o paragrafo no HTML.
-    static escreverProximaMensagemLog() {
-      const proximaMensagem = _Personagem.filaLog.shift();
-      if (proximaMensagem === void 0) {
-        _Personagem.escrevendoLog = false;
-        return;
-      }
-      const consoleBatalha = document.getElementById("console");
-      if (consoleBatalha === null) {
-        _Personagem.escrevendoLog = false;
-        return;
-      }
-      const paragrafo = document.createElement("p");
-      const texto = document.createElement("span");
-      const cursor = document.createElement("span");
-      cursor.className = "cursorLog";
-      cursor.textContent = "|";
-      paragrafo.appendChild(texto);
-      paragrafo.appendChild(cursor);
-      consoleBatalha.appendChild(paragrafo);
-      _Personagem.escrevendoLog = true;
-      _Personagem.textoAtualLog = proximaMensagem;
-      _Personagem.indiceTextoLog = 0;
-      _Personagem.elementoTextoLog = texto;
-      _Personagem.elementoCursorLog = cursor;
-      _Personagem.digitarMensagemLog();
-    }
-    // Escreve a mensagem atual letra por letra.
-    static digitarMensagemLog() {
-      if (_Personagem.elementoTextoLog === null) {
-        return;
-      }
-      if (_Personagem.indiceTextoLog < _Personagem.textoAtualLog.length) {
-        _Personagem.elementoTextoLog.textContent += _Personagem.textoAtualLog.charAt(_Personagem.indiceTextoLog);
-        _Personagem.indiceTextoLog++;
-        _Personagem.rolarLogParaBaixo();
-        _Personagem.tempoLog = window.setTimeout(
-          () => _Personagem.digitarMensagemLog(),
-          _Personagem.velocidadeDigitacaoLog
-        );
-        return;
-      }
-      _Personagem.finalizarMensagemLog();
-    }
-    // Termina uma mensagem e chama a proxima depois de uma pausa.
-    static finalizarMensagemLog() {
-      _Personagem.elementoCursorLog?.remove();
-      _Personagem.elementoTextoLog = null;
-      _Personagem.elementoCursorLog = null;
-      _Personagem.textoAtualLog = "";
-      _Personagem.indiceTextoLog = 0;
-      _Personagem.rolarLogParaBaixo();
-      _Personagem.tempoLog = window.setTimeout(
-        () => _Personagem.escreverProximaMensagemLog(),
-        _Personagem.pausaEntreMensagensLog
-      );
-    }
-    // Completa a mensagem atual de uma vez.
-    static pularAnimacaoLog() {
-      if (!_Personagem.escrevendoLog || _Personagem.elementoTextoLog === null) {
-        return;
-      }
-      if (_Personagem.tempoLog !== void 0) {
-        window.clearTimeout(_Personagem.tempoLog);
-      }
-      _Personagem.elementoTextoLog.textContent = _Personagem.textoAtualLog;
-      _Personagem.finalizarMensagemLog();
-    }
-    // Mantem a caixa do log sempre mostrando a ultima mensagem.
-    static rolarLogParaBaixo() {
-      const consoleBatalha = document.getElementById("console");
-      if (consoleBatalha !== null) {
-        consoleBatalha.scrollTop = consoleBatalha.scrollHeight;
-      }
-    }
   };
 
   // src/Guerreiro.ts
@@ -282,20 +293,25 @@
       super(nome, poder_de_ataque, vida, "./src/imagem2.png");
       this.defesa = 0.12;
     }
-    // O guerreiro sorteia um dos ataques e aplica dano no adversário.
-    atacar(adversario) {
+    // O guerreiro sorteia um ataque e aplica dano no adversario.
+    atacar(adversario, periodoAtual) {
       const tipoAtaque = this.gerarAtaque();
       let dano = 0;
+      let periodoFavoravel = "neutro";
       if (tipoAtaque === 0) {
         dano = this.poder_de_ataque * 0.9;
-        this.log(`${this.nome} Me d\xEA o cuuuuubo.`);
+        periodoFavoravel = "dia";
+        GerenciadorLog.adicionarMensagem(`${this.nome} usou Corte Rapido.`);
       } else if (tipoAtaque === 1) {
-        dano = this.poder_de_ataque * 1.15;
-        this.log(`${this.nome} Coffe with bread.`);
-      } else {
         dano = this.poder_de_ataque * 1.35;
-        this.log(`${this.nome} BEANS WHIT FLAVOR? \u{1F480}`);
+        periodoFavoravel = "neutro";
+        GerenciadorLog.adicionarMensagem(`${this.nome} usou Golpe Pesado.`);
+      } else {
+        dano = this.poder_de_ataque * 1.1;
+        periodoFavoravel = "dia";
+        GerenciadorLog.adicionarMensagem(`${this.nome} usou Investida.`);
       }
+      dano = this.aplicarBuffPeriodo(dano, periodoFavoravel, periodoAtual);
       adversario.sofreu_dano(this.calcularDano(dano));
     }
   };
@@ -306,20 +322,25 @@
       super(nome, poder_de_ataque, vida, "./src/imagem1.png");
       this.defesa = 0.06;
     }
-    // O mago sorteia uma magia e causa dano de acordo com o ataque escolhido.
-    atacar(adversario) {
+    // O mago sorteia uma magia e aplica dano no adversario.
+    atacar(adversario, periodoAtual) {
       const tipoAtaque = this.gerarAtaque();
       let dano = 0;
+      let periodoFavoravel = "neutro";
       if (tipoAtaque === 0) {
-        dano = this.poder_de_ataque * 0.95;
-        this.log(`${this.nome} usou baratas mexicanas \u{1F41C}`);
+        dano = this.poder_de_ataque * 0.9;
+        periodoFavoravel = "noite";
+        GerenciadorLog.adicionarMensagem(`${this.nome} usou Faisca Arcana.`);
       } else if (tipoAtaque === 1) {
-        dano = this.poder_de_ataque * 1.2;
-        this.log(`${this.nome} usou 71kg de batata doce \u{1F360}`);
+        dano = this.poder_de_ataque * 1.35;
+        periodoFavoravel = "dia";
+        GerenciadorLog.adicionarMensagem(`${this.nome} usou Bola de Fogo.`);
       } else {
-        dano = this.poder_de_ataque * 1.45;
-        this.log(`${this.nome} usou Feij\xE3o com farinha \u{1F480}`);
+        dano = this.poder_de_ataque * 1.1;
+        periodoFavoravel = "noite";
+        GerenciadorLog.adicionarMensagem(`${this.nome} usou Sombra Mistica.`);
       }
+      dano = this.aplicarBuffPeriodo(dano, periodoFavoravel, periodoAtual);
       adversario.sofreu_dano(this.calcularDano(dano));
     }
   };
@@ -334,6 +355,8 @@
       this.proximoEventoTurno = 0;
       this.arenaAtual = "normal";
       this.tempestadeEletricaTurnos = 0;
+      // Controle do periodo do dia.
+      this.periodoAtual = "dia";
     }
     // Comeca uma nova batalha com dois personagens.
     iniciar(player1, player2) {
@@ -345,21 +368,40 @@
       this.proximoEventoTurno = this.sortearIntervaloEvento();
       this.arenaAtual = "normal";
       this.tempestadeEletricaTurnos = 0;
+      this.periodoAtual = "dia";
       this.limparConsole();
       this.ativarBotoes(true);
       this.atualizarTela();
       this.mostrarTurno();
-      this.log("A batalha come\xE7ou!");
+      GerenciadorLog.adicionarMensagem("A batalha comecou durante o dia.");
+    }
+    // Evita jogadas antes de iniciar ou depois do fim da batalha.
+    podeJogar() {
+      if (this.jogadorUm === void 0 || this.jogadorDois === void 0) {
+        GerenciadorLog.adicionarMensagem("Clique em Batalhar primeiro!");
+        return false;
+      }
+      if (this.acabou) {
+        GerenciadorLog.adicionarMensagem("A batalha ja terminou. Clique em Batalhar para jogar de novo.");
+        return false;
+      }
+      return true;
+    }
+    getJogadorAtual() {
+      if (this.turnoAtual === this.jogadorUm.nome) {
+        return this.jogadorUm;
+      }
+      return this.jogadorDois;
     }
     Atacar() {
       if (!this.podeJogar()) {
         return;
       }
-      this.log(this.turnoAtual + " atacou!");
+      GerenciadorLog.adicionarMensagem(this.turnoAtual + " atacou!");
       if (this.turnoAtual === this.jogadorUm.nome) {
-        this.jogadorUm.atacar(this.jogadorDois);
+        this.jogadorUm.atacar(this.jogadorDois, this.periodoAtual);
       } else {
-        this.jogadorDois.atacar(this.jogadorUm);
+        this.jogadorDois.atacar(this.jogadorUm, this.periodoAtual);
       }
       this.atualizarTela();
       if (!this.jogadorUm.isContinuaVivo() || !this.jogadorDois.isContinuaVivo()) {
@@ -397,11 +439,19 @@
         proximoJogador = this.jogadorUm;
       }
       this.turnosPassados++;
+      this.verificarMudancaPeriodo();
       this.atualizarEfeitosTemporarios();
       this.verificarEventoAleatorio();
       proximoJogador.finalizarDefesa();
       this.atualizarTela();
       this.mostrarTurno();
+      this.animarTransicaoTurno();
+    }
+    calcularVida(jogador) {
+      return Math.max(0, jogador.getVida() / jogador.getVidaMaxima() * 100);
+    }
+    calcularDefesa(jogador) {
+      return jogador.getDefesaTotal() * 100;
     }
     // Atualiza nomes, imagens, barras e classes visuais no HTML.
     atualizarTela() {
@@ -414,12 +464,14 @@
       const cardUm = document.getElementById("cardJogadorUm");
       const cardDois = document.getElementById("cardJogadorDois");
       const arena = document.querySelector(".arena");
+      const textoPeriodo = document.getElementById("periodoAtual");
       imgUm.src = this.jogadorUm.getImg();
       imgDois.src = this.jogadorDois.getImg();
       document.getElementById("NomeUm").textContent = this.jogadorUm.nome;
       document.getElementById("NomeDois").textContent = this.jogadorDois.nome;
       document.getElementById("JogadorUmVida").textContent = "HP: " + this.jogadorUm.getVida();
       document.getElementById("JogadorDoisVida").textContent = "HP: " + this.jogadorDois.getVida();
+      textoPeriodo.textContent = "Periodo atual: " + this.getPeriodoFormatado();
       barraUm.style.width = this.calcularVida(this.jogadorUm) + "%";
       barraDois.style.width = this.calcularVida(this.jogadorDois) + "%";
       barraDefesaUm.style.width = this.calcularDefesa(this.jogadorUm) + "%";
@@ -429,24 +481,97 @@
       cardUm.classList.toggle("inimigo-enfurecido", this.jogadorUm.estaEnfurecido());
       cardDois.classList.toggle("inimigo-enfurecido", this.jogadorDois.estaEnfurecido());
       this.atualizarVisualArena(arena);
+      this.atualizarVisualPeriodo();
     }
-    calcularVida(jogador) {
-      return Math.max(0, jogador.getVida() / jogador.getVidaMaxima() * 100);
-    }
-    calcularDefesa(jogador) {
-      return jogador.getDefesaTotal() * 100;
-    }
-    getJogadorAtual() {
-      if (this.turnoAtual === this.jogadorUm.nome) {
-        return this.jogadorUm;
+    getPeriodoFormatado() {
+      if (this.periodoAtual === "dia") {
+        return "Dia";
       }
-      return this.jogadorDois;
+      return "Noite";
+    }
+    // Aplica a classe certa para o ambiente atual da arena.
+    atualizarVisualArena(arena) {
+      const classesArena = [
+        "arena-fogo",
+        "arena-chuva",
+        "arena-tempestade",
+        "arena-normal",
+        "arena-tempestade-eletrica"
+      ];
+      arena.classList.remove(...classesArena);
+      switch (this.arenaAtual) {
+        case "fogo":
+          arena.classList.add("arena-fogo");
+          break;
+        case "chuva":
+          arena.classList.add("arena-chuva");
+          break;
+        case "tempestade":
+          arena.classList.add("arena-tempestade");
+          break;
+        case "tempestade eletrica":
+          arena.classList.add("arena-tempestade-eletrica");
+          break;
+        default:
+          arena.classList.add("arena-normal");
+          break;
+      }
+    }
+    atualizarVisualPeriodo() {
+      document.body.classList.remove("modo-dia", "modo-noite");
+      if (this.periodoAtual === "dia") {
+        document.body.classList.add("modo-dia");
+      } else {
+        document.body.classList.add("modo-noite");
+      }
+    }
+    animarTransicaoTurno() {
+      const pagina = document.querySelector(".pagina");
+      if (pagina === null) {
+        return;
+      }
+      pagina.classList.remove("transicao-turno");
+      void pagina.offsetWidth;
+      pagina.classList.add("transicao-turno");
+      window.setTimeout(() => {
+        pagina.classList.remove("transicao-turno");
+      }, 1100);
+    }
+    // Mostra no topo e no log de quem e a vez.
+    mostrarTurno() {
+      document.getElementById("turnoAtual").textContent = "Turno atual: " + this.turnoAtual;
+      GerenciadorLog.adicionarMensagem("Agora e a vez do " + this.turnoAtual + " jogar!");
+      GerenciadorLog.adicionarMensagem("Periodo atual: " + this.getPeriodoFormatado() + ".");
+    }
+    // Liga ou desliga os botoes de acao.
+    ativarBotoes(ativo) {
+      const botoes = ["btnAtacar", "btnDefender", "btnCurar", "btnPassarTurno"];
+      botoes.forEach((id) => {
+        const botao = document.getElementById(id);
+        botao.disabled = !ativo;
+      });
+    }
+    // Limpa o log quando uma nova batalha comeca.
+    limparConsole() {
+      GerenciadorLog.limpar();
     }
     getOponenteAtual() {
       if (this.turnoAtual === this.jogadorUm.nome) {
         return this.jogadorDois;
       }
       return this.jogadorUm;
+    }
+    verificarMudancaPeriodo() {
+      if (this.turnosPassados % 3 !== 0) {
+        return;
+      }
+      if (this.periodoAtual === "dia") {
+        this.periodoAtual = "noite";
+        GerenciadorLog.adicionarMensagem("Anoiteceu! O periodo atual agora e Noite.");
+      } else {
+        this.periodoAtual = "dia";
+        GerenciadorLog.adicionarMensagem("Amanheceu! O periodo atual agora e Dia.");
+      }
     }
     // Sorteia se o proximo evento vai acontecer daqui 2 ou 3 turnos.
     sortearIntervaloEvento() {
@@ -463,96 +588,36 @@
     // Sorteia qual evento aleatorio vai acontecer.
     sortearEventoAleatorio() {
       const numeroEventoAleatorio = Math.floor(Math.random() * 6);
-      if (numeroEventoAleatorio === 0) {
-        this.eventoTerremoto();
-      } else if (numeroEventoAleatorio === 1) {
-        this.eventoPocaoMisteriosa();
-      } else if (numeroEventoAleatorio === 2) {
-        this.eventoMudancaDeArena();
-      } else if (numeroEventoAleatorio === 3) {
-        this.eventoInimigoEnfurecido();
-      } else if (numeroEventoAleatorio === 4) {
-        this.eventoEnergiaExtra();
-      } else {
-        this.eventoTempestadeEletrica();
+      switch (numeroEventoAleatorio) {
+        case 0:
+          this.eventoTerremoto();
+          break;
+        case 1:
+          this.eventoPocaoMisteriosa();
+          break;
+        case 2:
+          this.eventoMudancaDeArena();
+          break;
+        case 3:
+          this.eventoInimigoEnfurecido();
+          break;
+        case 4:
+          this.eventoEnergiaExtra();
+          break;
+        default:
+          this.eventoTempestadeEletrica();
+          break;
       }
     }
-    // Evento: diminui um pouco a defesa dos dois por alguns turnos.
-    eventoTerremoto() {
-      this.jogadorUm.reduzirDefesaTemporaria(0.08, 2);
-      this.jogadorDois.reduzirDefesaTemporaria(0.08, 2);
-      this.aplicarEfeitoVisualEvento("evento-terremoto");
-      this.log("O ch\xE3o tremeu violentamente! Todos perderam equil\xEDbrio.");
-    }
-    // Evento: cura quem vai jogar agora.
-    eventoPocaoMisteriosa() {
-      const jogadorCurado = this.getJogadorAtual();
-      jogadorCurado.recuperarVida(0.15);
-      this.aplicarEfeitoVisualEvento("evento-pocao", jogadorCurado);
-      this.log("Uma po\xE7\xE3o misteriosa apareceu! O jogador recuperou um pouco de vida.");
-    }
-    // Evento: muda a aparencia da arena.
-    eventoMudancaDeArena() {
-      const arenas = ["fogo", "chuva", "tempestade", "normal"];
-      const arenaSorteada = arenas[Math.floor(Math.random() * arenas.length)];
-      this.arenaAtual = arenaSorteada;
-      this.atualizarTela();
-      this.log("A arena mudou! O ambiente da batalha ficou diferente.");
-      this.log("Arena atual: " + this.arenaAtual + ".");
-    }
-    // Evento: deixa o oponente mais forte por alguns turnos.
-    eventoInimigoEnfurecido() {
-      const inimigo = this.getOponenteAtual();
-      inimigo.adicionarBonusAtaqueTemporario(0.15, 3);
-      this.aplicarEfeitoVisualEvento("inimigo-enfurecido", inimigo);
-      this.log("O inimigo ficou enfurecido e causar\xE1 mais dano por alguns turnos.");
-    }
-    // Evento: apenas mostra uma onda visual e mensagem no log.
-    eventoEnergiaExtra() {
-      this.aplicarEfeitoVisualEvento("evento-energia-extra");
-      this.log("Uma onda de energia tomou conta da arena!");
-    }
-    // Evento: deixa a arena em clima de tempestade por alguns turnos.
-    eventoTempestadeEletrica() {
-      this.arenaAtual = "tempestade eletrica";
-      this.tempestadeEletricaTurnos = 3;
-      this.atualizarTela();
-      this.log("Uma tempestade el\xE9trica come\xE7ou! Ataques el\xE9tricos ficaram mais fortes.");
-    }
-    // Reduz a duracao dos efeitos que acabam sozinhos.
-    atualizarEfeitosTemporarios() {
-      this.jogadorUm.atualizarEfeitosTemporarios();
-      this.jogadorDois.atualizarEfeitosTemporarios();
-      if (this.tempestadeEletricaTurnos > 0) {
-        this.tempestadeEletricaTurnos--;
-        if (this.tempestadeEletricaTurnos === 0 && this.arenaAtual === "tempestade eletrica") {
-          this.arenaAtual = "normal";
-          this.atualizarTela();
-          this.log("A tempestade el\xE9trica acabou. A arena voltou ao normal.");
-        }
+    // Descobre qual card HTML pertence a um personagem.
+    getCardPersonagem(personagem) {
+      if (personagem === this.jogadorUm) {
+        return document.getElementById("cardJogadorUm");
       }
-    }
-    // Aplica a classe certa para o ambiente atual da arena.
-    atualizarVisualArena(arena) {
-      const classesArena = [
-        "arena-fogo",
-        "arena-chuva",
-        "arena-tempestade",
-        "arena-normal",
-        "arena-tempestade-eletrica"
-      ];
-      arena.classList.remove(...classesArena);
-      if (this.arenaAtual === "fogo") {
-        arena.classList.add("arena-fogo");
-      } else if (this.arenaAtual === "chuva") {
-        arena.classList.add("arena-chuva");
-      } else if (this.arenaAtual === "tempestade") {
-        arena.classList.add("arena-tempestade");
-      } else if (this.arenaAtual === "tempestade eletrica") {
-        arena.classList.add("arena-tempestade-eletrica");
-      } else {
-        arena.classList.add("arena-normal");
+      if (personagem === this.jogadorDois) {
+        return document.getElementById("cardJogadorDois");
       }
+      return null;
     }
     // Aplica efeitos visuais rapidos, como tremor e brilho de cura.
     aplicarEfeitoVisualEvento(classe, personagem) {
@@ -571,15 +636,60 @@
         elemento.classList.remove(classe);
       }, 800);
     }
-    // Descobre qual card HTML pertence a um personagem.
-    getCardPersonagem(personagem) {
-      if (personagem === this.jogadorUm) {
-        return document.getElementById("cardJogadorUm");
+    // Evento: diminui um pouco a defesa dos dois por alguns turnos.
+    eventoTerremoto() {
+      this.jogadorUm.reduzirDefesaTemporaria(0.08, 2);
+      this.jogadorDois.reduzirDefesaTemporaria(0.08, 2);
+      this.aplicarEfeitoVisualEvento("evento-terremoto");
+      GerenciadorLog.adicionarMensagem("O chao tremeu violentamente! Todos perderam equilibrio.");
+    }
+    // Evento: cura quem vai jogar agora.
+    eventoPocaoMisteriosa() {
+      const jogadorCurado = this.getJogadorAtual();
+      jogadorCurado.recuperarVida(0.15);
+      this.aplicarEfeitoVisualEvento("evento-pocao", jogadorCurado);
+      GerenciadorLog.adicionarMensagem("Uma pocao misteriosa apareceu! O jogador recuperou um pouco de vida.");
+    }
+    // Evento: muda a aparencia da arena.
+    eventoMudancaDeArena() {
+      const arenas = ["fogo", "chuva", "tempestade", "normal"];
+      const arenaSorteada = arenas[Math.floor(Math.random() * arenas.length)];
+      this.arenaAtual = arenaSorteada;
+      this.atualizarTela();
+      GerenciadorLog.adicionarMensagem("A arena mudou! O ambiente da batalha ficou diferente.");
+      GerenciadorLog.adicionarMensagem("Arena atual: " + this.arenaAtual + ".");
+    }
+    // Evento: deixa o oponente mais forte por alguns turnos.
+    eventoInimigoEnfurecido() {
+      const inimigo = this.getOponenteAtual();
+      inimigo.adicionarBonusAtaqueTemporario(0.15, 3);
+      this.aplicarEfeitoVisualEvento("inimigo-enfurecido", inimigo);
+      GerenciadorLog.adicionarMensagem("O inimigo ficou enfurecido e causara mais dano por alguns turnos.");
+    }
+    // Evento: apenas mostra uma onda visual e mensagem no log.
+    eventoEnergiaExtra() {
+      this.aplicarEfeitoVisualEvento("evento-energia-extra");
+      GerenciadorLog.adicionarMensagem("Uma onda de energia tomou conta da arena!");
+    }
+    // Evento: deixa a arena em clima de tempestade por alguns turnos.
+    eventoTempestadeEletrica() {
+      this.arenaAtual = "tempestade eletrica";
+      this.tempestadeEletricaTurnos = 3;
+      this.atualizarTela();
+      GerenciadorLog.adicionarMensagem("Uma tempestade eletrica comecou! Ataques eletricos ficaram mais fortes.");
+    }
+    // Reduz a duracao dos efeitos que acabam sozinhos.
+    atualizarEfeitosTemporarios() {
+      this.jogadorUm.atualizarEfeitosTemporarios();
+      this.jogadorDois.atualizarEfeitosTemporarios();
+      if (this.tempestadeEletricaTurnos > 0) {
+        this.tempestadeEletricaTurnos--;
+        if (this.tempestadeEletricaTurnos === 0 && this.arenaAtual === "tempestade eletrica") {
+          this.arenaAtual = "normal";
+          this.atualizarTela();
+          GerenciadorLog.adicionarMensagem("A tempestade eletrica acabou. A arena voltou ao normal.");
+        }
       }
-      if (personagem === this.jogadorDois) {
-        return document.getElementById("cardJogadorDois");
-      }
-      return null;
     }
     // Encerra a partida e mostra quem venceu.
     finalizarJogo() {
@@ -587,45 +697,12 @@
       this.ativarBotoes(false);
       document.getElementById("turnoAtual").textContent = "Fim de jogo";
       if (this.jogadorUm.isContinuaVivo()) {
-        this.log(this.jogadorUm.nome + " ganhou a luta!");
+        GerenciadorLog.adicionarMensagem(this.jogadorUm.nome + " ganhou a luta!");
       } else if (this.jogadorDois.isContinuaVivo()) {
-        this.log(this.jogadorDois.nome + " ganhou a luta!");
+        GerenciadorLog.adicionarMensagem(this.jogadorDois.nome + " ganhou a luta!");
       } else {
-        this.log("A luta terminou em empate!");
+        GerenciadorLog.adicionarMensagem("A luta terminou em empate!");
       }
-    }
-    // Evita jogadas antes de iniciar ou depois do fim da batalha.
-    podeJogar() {
-      if (this.jogadorUm === void 0 || this.jogadorDois === void 0) {
-        this.log("Clique em Batalhar primeiro!");
-        return false;
-      }
-      if (this.acabou) {
-        this.log("A batalha j\xE1 terminou. Clique em Batalhar para jogar de novo.");
-        return false;
-      }
-      return true;
-    }
-    // Mostra no topo e no log de quem e a vez.
-    mostrarTurno() {
-      document.getElementById("turnoAtual").textContent = "Turno atual: " + this.turnoAtual;
-      this.log("Agora \xE9 a vez do " + this.turnoAtual + " jogar!");
-    }
-    // Liga ou desliga os botoes de acao.
-    ativarBotoes(ativo) {
-      const botoes = ["btnAtacar", "btnDefender", "btnCurar", "btnPassarTurno"];
-      botoes.forEach((id) => {
-        const botao = document.getElementById(id);
-        botao.disabled = !ativo;
-      });
-    }
-    // Envia mensagens para o log com efeito de digitacao.
-    log(mensagem) {
-      Personagem.adicionarMensagemLog(mensagem);
-    }
-    // Limpa o log quando uma nova batalha comeca.
-    limparConsole() {
-      Personagem.limparLog();
     }
   };
   var jogo = new Jogo();

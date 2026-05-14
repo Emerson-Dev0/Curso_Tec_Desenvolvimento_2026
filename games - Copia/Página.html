@@ -4,13 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Batalha</title>
-  <link rel="stylesheet" href="style_pagina.CSS">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="animacoes.css">
+  <link rel="stylesheet" href="arena.css">
+  <link rel="stylesheet" href="personagens.css">
+  <link rel="stylesheet" href="botoes.css">
+  <link rel="stylesheet" href="log.css">
 </head>
 
-<body>
+<body class="modo-dia">
   <div class="pagina">
     <h1>Batalha</h1>
-    <p id="turnoAtual" class="turno">Clique em Batalhar para começar</p>
+    <p id="turnoAtual" class="turno">Clique em Batalhar para comecar</p>
+    <p id="periodoAtual" class="periodo">Periodo atual: Dia</p>
 
     <div class="arena">
       <div id="cardJogadorUm" class="personagem">
@@ -48,7 +54,7 @@
       <button id="btnAtacar" disabled>Atacar</button>
       <button id="btnDefender" disabled>Defender</button>
       <button id="btnCurar" disabled>Curar</button>
-      <button id="btnPassarTurno" disabled>Próximo Turno</button>
+      <button id="btnPassarTurno" disabled>Proximo Turno</button>
     </div>
 
     <h2>Registro da batalha</h2>
