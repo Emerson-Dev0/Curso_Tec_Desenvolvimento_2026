@@ -313,7 +313,6 @@ export abstract class Personagem {
     Personagem.elementoTextoLog.textContent = Personagem.textoAtualLog;
     Personagem.finalizarMensagemLog();
   }
-
   // Mantem a caixa do log sempre mostrando a ultima mensagem.
   private static rolarLogParaBaixo(): void {
     const consoleBatalha = document.getElementById("console");

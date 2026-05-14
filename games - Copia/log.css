@@ -1,0 +1,29 @@
+/* Log da batalha */
+.console {
+  height: 180px;
+  padding: 12px;
+  overflow-y: auto;
+  border: 1px solid #d7dee8;
+  border-radius: 8px;
+  background-color: white;
+  color: #17202a;
+  text-align: left;
+}
+
+.console p {
+  margin: 0 0 8px;
+}
+
+/* Cursor do texto sendo digitado no log */
+.cursorLog {
+  display: inline-block;
+  margin-left: 2px;
+  font-weight: bold;
+  animation: piscarCursorLog 0.75s steps(1) infinite;
+}
+
+body.modo-noite .console {
+  border-color: #334155;
+  background-color: #f8fafc;
+  color: #17202a;
+}
